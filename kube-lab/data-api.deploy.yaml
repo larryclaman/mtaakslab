@@ -1,0 +1,24 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: data-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: data-api
+  template:
+    metadata:
+      labels:
+        app: data-api
+    spec:
+      containers:
+      - name: data-api-pod
+        image: lncmta032719.azurecr.io/smilr/data-api
+        ports:
+        - containerPort: 4000
+        env:
+        - name: MONGO_CONNSTR
+          value: mongodb://10.244.1.2
+      imagePullSecrets:
+      - name: acr-auth

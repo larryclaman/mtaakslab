@@ -36,5 +36,20 @@ az acr build --registry $ACR_NAME -g $group --file node/frontend/Dockerfile \
     --image smilr/frontend https://github.com/benc-uk/smilr.git
 az acr repository list -g $group --name $ACR_NAME -o table
 
+# Lab 3
+mkdir kube-lab
+cd kube-lab
 
+kubectl apply -f mongo.deploy.yaml
+kubectl get all
+kubectl describe pod -l app=mongodb
+kubectl get pod -l app=mongodb -o=jsonpath='{.items[0].status.podIP}{"\n"}'
+#  10.240.1.2
+
+kubectl apply -f data-api.deploy.yaml
+kubectl logs -l app=data-api
+
+#
+kubectl get pods
+kubectl port-forward data-api-754f96bc59-vckfn 8080:4000
 
