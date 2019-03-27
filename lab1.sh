@@ -115,3 +115,51 @@ kubectl apply -f frontend.deploy.yaml
 kubectl get pods -l app=data-api
 kubectl exec -it {pod_name} bash
 
+# lab 6
+kubectl scale --replicas=3 deploy/data-api
+
+kubectl scale --replicas=3 deploy/frontend
+kubectl get pods -o wide -l app=frontend
+
+
+#
+cat >mongo.stateful.yaml <<EOF
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: mongodb
+spec:
+  serviceName: mongodb
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - name: mongodb-pod
+        image: mongo:3.4-jessie
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+          - name: mongo-vol
+            mountPath: /data/db
+  volumeClaimTemplates:
+    - metadata:
+        name: mongo-vol
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: default
+        resources:
+          requests:
+            storage: 500M 
+EOF
+
+kubectl delete -f mongo.deploy.yaml
+kubectl apply -f mongo.stateful.yaml
+kubectl get pvc
+kubectl get pv
+kubectl get pods -l app=mongodb -o wide
