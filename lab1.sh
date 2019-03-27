@@ -62,3 +62,56 @@ kubectl apply -f data-api.svc.yaml
 kubectl get service
 # 52.247.200.40   
 curl http://52.247.200.40/api/info
+
+# Lab 5
+cat >frontend.svc.yaml <<EOF
+kind: Service
+apiVersion: v1
+metadata:
+  name: frontend-svc
+spec:
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3000
+  selector:
+    app: frontend
+EOF
+
+kubectl apply -f frontend.svc.yaml
+# 13.66.168.104 
+
+cat >frontend.deploy.yaml <<EOF
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend-pod
+        image: lncmta032719.azurecr.io/smilr/frontend
+        ports:
+        - containerPort: 3000
+        env:
+        - name: API_ENDPOINT
+          value: http://52.247.200.40/api
+      imagePullSecrets:
+      - name: acr-auth
+EOF
+
+kubectl apply -f frontend.deploy.yaml
+
+#
+kubectl get pods -l app=data-api
+kubectl exec -it {pod_name} bash
+
