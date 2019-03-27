@@ -53,3 +53,12 @@ kubectl logs -l app=data-api
 kubectl get pods
 kubectl port-forward data-api-754f96bc59-vckfn 8080:4000
 
+# part 4
+kubectl apply -f mongo.svc.yaml
+kubectl apply -f data-api.deploy.yaml
+
+kubectl apply -f data-api.svc.yaml
+
+kubectl get service
+# 52.247.200.40   
+curl http://52.247.200.40/api/info

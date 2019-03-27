@@ -19,6 +19,7 @@ spec:
         - containerPort: 4000
         env:
         - name: MONGO_CONNSTR
-          value: mongodb://10.244.1.2
+#          value: mongodb://10.244.1.2
+          value: mongodb://mongodb-svc.default
       imagePullSecrets:
       - name: acr-auth
